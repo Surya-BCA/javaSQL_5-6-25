@@ -1,0 +1,12 @@
+create table Student(
+	Roll_number int,
+	Student_name varchar(10),
+	Phn_number int
+);
+insert into Student (Roll_number,Student_name,Phn_number)
+values(0123,'Abdul',9057512345);
+values(2345,'Abd',9078563412);
+values(0356,'Waheed',2468012457);
+values(0443,'AAAA',8906543215);
+values(0578,'Abdulwaheed',7890654321);
+	
