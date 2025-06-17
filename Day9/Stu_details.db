@@ -13,15 +13,45 @@ VALUES
 (0443, 'AAAA', 'Linux', 'AWS', 17000);
 
 
+mysql> select* from Student;
++-------------+--------------+--------------+-----------------------+--------------+
+| Roll_number | Student_name | Book_name    | Courses               | Courses_fees |
++-------------+--------------+--------------+-----------------------+--------------+
+|         123 | Abdul        | java_Basics  | Full_Stack            |        15000 |
+|        2345 | Abd          | Java_Scripts | Web_development       |        13000 |
+|         356 | Waheed       | C++          | Software_Developement |        20000 |
+|         443 | AAAA         | Linux        | AWS                   |        17000 |
++-------------+--------------+--------------+-----------------------+--------------+
+
 select* from Student            // ordering course fees
     order by  Courses_fees asc;
++-------------+--------------+--------------+-----------------------+--------------+----------------+
+| Roll_number | Student_name | Book_name    | Courses               | Courses_fees | Students_marks |
++-------------+--------------+--------------+-----------------------+--------------+----------------+
+|         123 | Abdul        | java_Basics  | Full_Stack            |        15000 |             87 |
+|        2345 | Abd          | Java_Scripts | Web_development       |        13000 |             90 |
+|         356 | Waheed       | C++          | Software_Developement |        20000 |             75 |
+|         443 | AAAA         | Linux        | AWS                   |        17000 |             60 |
++-------------+--------------+--------------+-----------------------+--------------+----------------+
+
 
 
 
  select* from Student          // using like operator
      where Book_name like 'L%x';
++-------------+--------------+-----------+---------+--------------+
+| Roll_number | Student_name | Book_name | Courses | Courses_fees |
++-------------+--------------+-----------+---------+--------------+
+|         443 | AAAA         | Linux     | AWS     |        17000 |
++-------------+--------------+-----------+---------+--------------+
 
 
 
  select*from Student		// mark>80
     -> where Students_marks>80;
++-------------+--------------+--------------+-----------------+--------------+----------------+
+| Roll_number | Student_name | Book_name    | Courses         | Courses_fees | Students_marks |
++-------------+--------------+--------------+-----------------+--------------+----------------+
+|         123 | Abdul        | java_Basics  | Full_Stack      |        15000 |             87 |
+|        2345 | Abd          | Java_Scripts | Web_development |        13000 |             90 |
++-------------+--------------+--------------+-----------------+--------------+----------------+
