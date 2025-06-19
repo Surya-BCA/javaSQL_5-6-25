@@ -35,3 +35,14 @@ WHERE student_id = (
     
 );
 
+SELECT 
+    c.name AS customer_name,
+    c.city,
+    oi.order_id,
+    oi.order_date,
+    oi.amount
+FROM customers c
+JOIN orders oi ON c.customer_id = oi.customer_id
+WHERE c.city = 'New York'
+  AND oi.order_date BETWEEN '2025-06-01' AND '2025-06-30';
+
