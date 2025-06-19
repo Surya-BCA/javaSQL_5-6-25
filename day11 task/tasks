@@ -1,0 +1,37 @@
+CREATE TABLE students (
+    student_id INT ,
+    name VARCHAR(20)
+);
+
+INSERT INTO students (student_id, name) VALUES
+(1, 'Alice'),
+(2, 'Bob'),
+(3, 'Charlie');
+
+CREATE TABLE marks (
+    mark_id INT,
+    student_id INT,
+    subject VARCHAR(50),
+    score INT,
+);
+
+INSERT INTO marks (mark_id, student_id, subject, score) VALUES
+(1, 1, 'Math', 85),
+(2, 1, 'Science', 90),
+(3, 2, 'Math', 78),
+(4, 3, 'Math', 92),
+(5, 3, 'Science', 88);
+
+SELECT s.student_id, s.name, m.subject, m.score
+FROM students s
+JOIN marks m ON s.student_id = m.student_id;
+
+SELECT student_id, name
+FROM students
+WHERE student_id = (
+    SELECT student_id
+    FROM marks
+    GROUP BY student_id
+    
+);
+
