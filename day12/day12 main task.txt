@@ -1,0 +1,68 @@
+package finalday;
+
+import java.sql.*;
+
+public class jd2 {
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        String url = "jdbc:mysql://localhost:3306/task_1";
+        String userName = "root";
+        String password = "";
+
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+    
+        Connection con = DriverManager.getConnection(url, userName, password);
+        System.out.println("Driver loaded and connected");
+
+      
+        Statement st = con.createStatement();
+        String insert = "INSERT INTO students (name, dept, age) VALUES ('John Doe', 'Computer Science', 20)";
+        st.executeUpdate(insert);
+        
+       
+        System.out.println("Student inserted.");
+
+        
+    }
+}
+
+
+
+
+output:
+
+Driver loaded and connected
+Student inserted.
+
+In Console:
+
+ create table students(
+    -> name varchar(20),
+    -> dept varchar(25),
+    -> age int
+    -> );
+
+desc students;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| name  | varchar(20) | YES  |     | NULL    |       |
+| dept  | varchar(25) | YES  |     | NULL    |       |
+| age   | int         | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+
+select* from students;
++----------+------------------+------+
+| name     | dept             | age  |
++----------+------------------+------+
+| John Doe | Computer Science |   20 |
++----------+------------------+------+
+
+
+
+
+
+
+
+
