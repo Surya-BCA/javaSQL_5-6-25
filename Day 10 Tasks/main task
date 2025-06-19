@@ -1,0 +1,48 @@
+CREATE TABLE enrollments (
+    student_id INT,
+    course_id INT
+);
+
+INSERT INTO enrollments (student_id, course_id) VALUES
+(1, 101),
+(2, 101),
+(3, 102),
+(4, 101),
+(5, 103),
+(6, 102);
+
+SELECT course_id, COUNT(student_id) AS student_count
+FROM enrollments
+GROUP BY course_id;
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+CREATE TABLE employees (
+    employee_id INT,
+    department_id INT,
+    salary DECIMAL(10, 2)
+);
+INSERT INTO employees (employee_id, department_id, salary) VALUES
+(1, 10, 50000.00),
+(2, 10, 60000.00),
+(3, 20, 55000.00),
+(4, 20, 52000.00),
+(5, 30, 70000.00);
+
+SELECT department_id, AVG(salary) AS average_salary
+FROM employees
+GROUP BY department_id;
+
+
+
+SELECT
+    MAX(price) AS max_price
+FROM products;
+
+
+SELECT 
+    MIN(price) AS min_price
+FROM products;
+
