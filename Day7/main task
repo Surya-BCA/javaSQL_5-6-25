@@ -1,0 +1,39 @@
+CREATE TABLE authors (
+    author_id INT ,
+    name VARCHAR(20) 
+);
+
+CREATE TABLE books (
+    book_id INT ,
+    title VARCHAR(20),
+    genre VARCHAR(20),
+    published_year INT
+);
+
+CREATE TABLE book_sales (
+    book_Quantity INT,
+    book_name varchar(20)
+);
+
+
+INSERT INTO authors (name) VALUES 
+('J.K. Rowling'),
+('George R.R. Martin'),
+('J.R.R. Tolkien');
+
+INSERT INTO books (title, genre, published_year) VALUES
+('Harry Potter and the Philosophers Stone', 'Fantasy', 1997),
+('A Game of Thrones', 'Fantasy', 1996),
+('The Hobbit', 'Fantasy', 1937);
+
+
+INSERT INTO book_sales (book_Quantity, book_name) VALUES 
+(10, 'Harry Potter'),
+(5, 'The Hobbit'),
+(8, '1984');
+
+
+
+
+
+
