@@ -1,0 +1,26 @@
+CREATE TABLE customers (
+    customer_id INT ,
+    name VARCHAR(20),
+    email VARCHAR(20),
+    city VARCHAR(25),
+    age INT,
+    registration_date DATE
+);
+
+INSERT INTO customers (name, email, city, age, registration_date) VALUES
+('Alice', 'alice@example.com', 'New York', 28, '2024-01-15'),
+(' Smith', 'smith@example.com', 'Los Angeles', 35, '2023-11-05'),
+('Lee', 'lee@example.com', 'Chicago', 22, '2025-02-20'),
+('Clark', 'clark@example.com', 'New York', 40, '2024-06-10'),
+('Emma s', 'emma@example.com', 'Houston', 30, '2025-05-25');
+
+SELECT * FROM customers
+WHERE city = 'New York';
+
+
+SELECT * FROM customers
+WHERE name LIKE 'A%';
+
+
+SELECT * FROM customers
+WHERE age BETWEEN 25 AND 35;
