@@ -1,0 +1,140 @@
+MYSQL SERVER
+
+
+CREATE DATABASE payroll_db;
+
+USE payroll_db;
+
+CREATE TABLE employee (
+    id INT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    designation VARCHAR(100),
+    salary DOUBLE
+);
+
+CREATE TABLE payroll (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_id INT,
+    gross DOUBLE,
+    tax DOUBLE,
+    net DOUBLE,
+    FOREIGN KEY (employee_id) REFERENCES employee(id)
+);
+
+
+
+IN ECLIPSE
+
+import java.sql.*;
+
+public class DBConnection {
+    public static Connection getConnection() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            return DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/payroll_db", "root", "your_password"
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}
+
+public class Employee {
+    int id;
+    String name, email, designation;
+    double salary;
+
+    public Employee(int id, String name, String email, String designation, double salary) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.designation = designation;
+        this.salary = salary;
+    }
+}
+
+
+import java.sql.*;
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Connection conn = DBConnection.getConnection();
+
+        while (true) {
+            System.out.println("\n1. Add Employee\n2. Generate Payroll\n3. Exit");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1 -> {
+                    try {
+                        System.out.print("ID: "); int id = sc.nextInt(); sc.nextLine();
+                        System.out.print("Name: "); String name = sc.nextLine();
+                        System.out.print("Email: "); String email = sc.nextLine();
+                        System.out.print("Designation: "); String desig = sc.nextLine();
+                        System.out.print("Salary: "); double salary = sc.nextDouble();
+
+                        String sql = "INSERT INTO employee VALUES (?, ?, ?, ?, ?)";
+                        PreparedStatement ps = conn.prepareStatement(sql);
+                        ps.setInt(1, id);
+                        ps.setString(2, name);
+                        ps.setString(3, email);
+                        ps.setString(4, desig);
+                        ps.setDouble(5, salary);
+                        ps.executeUpdate();
+                        System.out.println("Employee added.");
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                }
+
+                case 2 -> {
+                    try {
+                        System.out.print("Enter Employee ID: ");
+                        int id = sc.nextInt();
+
+                        String query = "SELECT * FROM employee WHERE id = ?";
+                        PreparedStatement ps = conn.prepareStatement(query);
+                        ps.setInt(1, id);
+                        ResultSet rs = ps.executeQuery();
+
+                        if (rs.next()) {
+                            double salary = rs.getDouble("salary");
+                            double tax = salary * 0.1;
+                            double net = salary - tax;
+
+                            String insert = "INSERT INTO payroll (employee_id, gross, tax, net) VALUES (?, ?, ?, ?)";
+                            PreparedStatement ps2 = conn.prepareStatement(insert);
+                            ps2.setInt(1, id);
+                            ps2.setDouble(2, salary);
+                            ps2.setDouble(3, tax);
+                            ps2.setDouble(4, net);
+                            ps2.executeUpdate();
+
+                            System.out.println("Payroll Generated:");
+                            System.out.println("Gross: " + salary);
+                            System.out.println("Tax: " + tax);
+                            System.out.println("Net: " + net);
+                        } else {
+                            System.out.println("Employee not found.");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                }
+
+                case 3 -> {
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }
+
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+}
+

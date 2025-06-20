@@ -1,0 +1,179 @@
+import java.sql.*;
+import java.util.*;
+import java.io.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        Connection conn = DBConnection.getConnection();
+
+        while (true) {
+            System.out.println("""
+                \nMenu:
+                1. Add Employee
+                2. Update Employee
+                3. Delete Employee
+                4. View All Employees
+                5. Generate Payroll
+                6. Export Payslip to File
+                7. Exit
+                """);
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1 -> addEmployee(sc, conn);
+                case 2 -> updateEmployee(sc, conn);
+                case 3 -> deleteEmployee(sc, conn);
+                case 4 -> viewEmployees(conn);
+                case 5 -> generatePayroll(sc, conn);
+                case 6 -> exportPayslip(sc, conn);
+                case 7 -> {
+                    System.out.println("Goodbye!");
+                    return;
+                }
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    static void addEmployee(Scanner sc, Connection conn) {
+        try {
+            System.out.print("ID: "); int id = sc.nextInt(); sc.nextLine();
+            System.out.print("Name: "); String name = sc.nextLine();
+            System.out.print("Email: "); String email = sc.nextLine();
+            System.out.print("Designation: "); String desig = sc.nextLine();
+            System.out.print("Salary: "); double salary = sc.nextDouble();
+
+            String sql = "INSERT INTO employee VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id); ps.setString(2, name); ps.setString(3, email);
+            ps.setString(4, desig); ps.setDouble(5, salary);
+            ps.executeUpdate();
+            System.out.println("✅ Employee added.");
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    static void updateEmployee(Scanner sc, Connection conn) {
+        try {
+            System.out.print("Enter Employee ID to update: ");
+            int id = sc.nextInt(); sc.nextLine();
+            System.out.print("New Name: "); String name = sc.nextLine();
+            System.out.print("New Email: "); String email = sc.nextLine();
+            System.out.print("New Designation: "); String desig = sc.nextLine();
+            System.out.print("New Salary: "); double salary = sc.nextDouble();
+
+            String sql = "UPDATE employee SET name=?, email=?, designation=?, salary=? WHERE id=?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, name); ps.setString(2, email);
+            ps.setString(3, desig); ps.setDouble(4, salary);
+            ps.setInt(5, id);
+            int rows = ps.executeUpdate();
+            System.out.println(rows > 0 ? "✅ Employee updated." : "❌ Employee not found.");
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    static void deleteEmployee(Scanner sc, Connection conn) {
+        try {
+            System.out.print("Enter Employee ID to delete: ");
+            int id = sc.nextInt();
+            String sql = "DELETE FROM employee WHERE id=?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            int rows = ps.executeUpdate();
+            System.out.println(rows > 0 ? "✅ Employee deleted." : "❌ Employee not found.");
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    static void viewEmployees(Connection conn) {
+        try {
+            String sql = "SELECT * FROM employee";
+            ResultSet rs = conn.createStatement().executeQuery(sql);
+            System.out.println("\n--- Employee List ---");
+            while (rs.next()) {
+                System.out.printf("ID: %d, Name: %s, Email: %s, Designation: %s, Salary: %.2f%n",
+                        rs.getInt("id"), rs.getString("name"),
+                        rs.getString("email"), rs.getString("designation"),
+                        rs.getDouble("salary"));
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    static void generatePayroll(Scanner sc, Connection conn) {
+        try {
+            System.out.print("Enter Employee ID: ");
+            int id = sc.nextInt();
+
+            String query = "SELECT * FROM employee WHERE id = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                double salary = rs.getDouble("salary");
+                double tax = salary * 0.1;
+                double net = salary - tax;
+
+                String insert = "INSERT INTO payroll (employee_id, gross, tax, net) VALUES (?, ?, ?, ?)";
+                PreparedStatement ps2 = conn.prepareStatement(insert);
+                ps2.setInt(1, id); ps2.setDouble(2, salary);
+                ps2.setDouble(3, tax); ps2.setDouble(4, net);
+                ps2.executeUpdate();
+
+                System.out.println("✅ Payroll Generated:");
+                System.out.printf("Gross: %.2f, Tax: %.2f, Net: %.2f%n", salary, tax, net);
+            } else {
+                System.out.println("❌ Employee not found.");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+
+    static void exportPayslip(Scanner sc, Connection conn) {
+        try {
+            System.out.print("Enter Employee ID: ");
+            int id = sc.nextInt();
+
+            String sql = """
+                SELECT e.name, e.designation, p.gross, p.tax, p.net
+                FROM employee e JOIN payroll p ON e.id = p.employee_id
+                WHERE e.id = ? ORDER BY p.id DESC LIMIT 1
+            """;
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String name = rs.getString("name");
+                String desig = rs.getString("designation");
+                double gross = rs.getDouble("gross");
+                double tax = rs.getDouble("tax");
+                double net = rs.getDouble("net");
+
+                String filename = "Payslip_" + id + ".txt";
+                try (PrintWriter out = new PrintWriter(filename)) {
+                    out.println("----- Payslip -----");
+                    out.println("Name: " + name);
+                    out.println("Designation: " + desig);
+                    out.printf("Gross Salary: %.2f%nTax: %.2f%nNet Pay: %.2f%n", gross, tax, net);
+                    out.println("-------------------");
+                }
+
+                System.out.println("✅ Payslip exported to: " + filename);
+            } else {
+                System.out.println("❌ No payroll record found.");
+            }
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+}
